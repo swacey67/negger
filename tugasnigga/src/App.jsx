@@ -527,7 +527,7 @@ const App = () => {
                   <li><a href="#" className="text-slate-400 hover:text-teal-400 transition-colors text-sm">Jakarta Pusat</a></li>
                   <li><a href="#" className="text-slate-400 hover:text-teal-400 transition-colors text-sm">Premium Kosts</a></li>
                   <li><a href="#" className="text-slate-400 hover:text-teal-400 transition-colors text-sm">Luxury Apartments</a></li>
-                </ul>
+                </ul
               </div>
 
               <div>
