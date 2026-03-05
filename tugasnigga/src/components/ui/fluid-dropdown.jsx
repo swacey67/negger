@@ -4,12 +4,10 @@ import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence, MotionConfig } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 
-// Utility function for className merging
 function cn(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-// Custom hook for click outside detection
 function useClickAway(ref, handler) {
   useEffect(() => {
     const listener = (event) => {
@@ -18,10 +16,8 @@ function useClickAway(ref, handler) {
       }
       handler(event);
     };
-
     document.addEventListener("mousedown", listener);
     document.addEventListener("touchstart", listener);
-
     return () => {
       document.removeEventListener("mousedown", listener);
       document.removeEventListener("touchstart", listener);
@@ -29,7 +25,6 @@ function useClickAway(ref, handler) {
   }, [ref, handler]);
 }
 
-// Animated Icon Wrapper
 const IconWrapper = ({ icon: Icon, isHovered, color }) => {
   if (!Icon) return null;
   return (
@@ -54,7 +49,7 @@ const IconWrapper = ({ icon: Icon, isHovered, color }) => {
   );
 };
 
-export function FluidDropdown({ options, value, onChange }) {
+export function FluidDropdown({ options, value, onChange, placeholder = "Select option" }) {
   const [isOpen, setIsOpen] = useState(false);
   const [hoveredCategory, setHoveredCategory] = useState(null);
   const dropdownRef = useRef(null);
@@ -62,54 +57,37 @@ export function FluidDropdown({ options, value, onChange }) {
   useClickAway(dropdownRef, () => setIsOpen(false));
 
   const handleKeyDown = (e) => {
-    if (e.key === "Escape") {
-      setIsOpen(false);
-    }
+    if (e.key === "Escape") setIsOpen(false);
   };
 
-  // Find the currently selected option to display its label
-  const selectedOption = options.find(o => o.id === value) || options[0];
+  const selectedOption = options.find(o => o.id === value) || { id: "", label: placeholder };
 
   return (
     <MotionConfig reducedMotion="user">
       <div className="w-full relative" ref={dropdownRef}>
-        {/* The Invisible Trigger Button */}
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
-          className="w-full flex items-center justify-between bg-transparent border-none outline-none text-white text-sm font-medium cursor-pointer py-1"
-          aria-expanded={isOpen}
-          aria-haspopup="true"
+          className="w-full flex items-center justify-between bg-transparent border-none outline-none text-white text-sm font-medium cursor-pointer py-1 pr-6 relative z-10"
         >
-          <span className="flex items-center text-slate-200">
+          <span className={value ? "text-white" : "text-slate-300"}>
             {selectedOption.label}
           </span>
           <motion.div
             animate={{ rotate: isOpen ? 180 : 0 }}
             transition={{ duration: 0.2 }}
-            className="flex items-center justify-center w-5 h-5 text-slate-500"
+            className="absolute right-0 flex items-center justify-center w-5 h-5 text-slate-500"
           >
             <ChevronDown className="w-4 h-4" />
           </motion.div>
         </button>
 
-        {/* The Animated Dropdown Menu */}
         <AnimatePresence>
           {isOpen && (
             <motion.div
               initial={{ opacity: 1, y: 0, height: 0 }}
-              animate={{
-                opacity: 1,
-                y: 0,
-                height: "auto",
-                transition: { type: "spring", stiffness: 500, damping: 30, mass: 1 },
-              }}
-              exit={{
-                opacity: 0,
-                y: 0,
-                height: 0,
-                transition: { type: "spring", stiffness: 500, damping: 30, mass: 1 },
-              }}
+              animate={{ opacity: 1, y: 0, height: "auto", transition: { type: "spring", stiffness: 500, damping: 30, mass: 1 } }}
+              exit={{ opacity: 0, y: 0, height: 0, transition: { type: "spring", stiffness: 500, damping: 30, mass: 1 } }}
               className="absolute left-0 right-0 top-full mt-4 z-[100]"
               onKeyDown={handleKeyDown}
             >
@@ -121,14 +99,10 @@ export function FluidDropdown({ options, value, onChange }) {
               >
                 <motion.div 
                   className="relative" 
-                  variants={{
-                    hidden: { opacity: 0 },
-                    visible: { opacity: 1, transition: { when: "beforeChildren", staggerChildren: 0.05 } }
-                  }} 
+                  variants={{ hidden: { opacity: 0 }, visible: { opacity: 1, transition: { when: "beforeChildren", staggerChildren: 0.05 } } }} 
                   initial="hidden" 
                   animate="visible"
                 >
-                  {/* The Sliding Highlight Box */}
                   <motion.div
                     layoutId="hover-highlight"
                     className="absolute inset-x-0 bg-teal-500/10 rounded-lg border border-teal-500/20"
@@ -136,22 +110,14 @@ export function FluidDropdown({ options, value, onChange }) {
                       y: options.findIndex((c) => (hoveredCategory || selectedOption.id) === c.id) * 44,
                       height: 40,
                     }}
-                    transition={{
-                      type: "spring",
-                      bounce: 0.15,
-                      duration: 0.5,
-                    }}
+                    transition={{ type: "spring", bounce: 0.15, duration: 0.5 }}
                   />
                   
-                  {/* The Options */}
                   {options.map((category) => (
                     <motion.button
                       key={category.id}
                       type="button"
-                      onClick={() => {
-                        onChange(category.id);
-                        setIsOpen(false);
-                      }}
+                      onClick={() => { onChange(category.id); setIsOpen(false); }}
                       onHoverStart={() => setHoveredCategory(category.id)}
                       onHoverEnd={() => setHoveredCategory(null)}
                       className={cn(
@@ -162,16 +128,9 @@ export function FluidDropdown({ options, value, onChange }) {
                           : "text-slate-300"
                       )}
                       whileTap={{ scale: 0.98 }}
-                      variants={{
-                        hidden: { opacity: 0, y: -10 },
-                        visible: { opacity: 1, y: 0, transition: { duration: 0.3, ease: [0.25, 0.1, 0.25, 1] } }
-                      }}
+                      variants={{ hidden: { opacity: 0, y: -10 }, visible: { opacity: 1, y: 0, transition: { duration: 0.3, ease: [0.25, 0.1, 0.25, 1] } } }}
                     >
-                      <IconWrapper 
-                        icon={category.icon} 
-                        isHovered={hoveredCategory === category.id} 
-                        color={category.color} 
-                      />
+                      <IconWrapper icon={category.icon} isHovered={hoveredCategory === category.id} color={category.color} />
                       {category.label}
                     </motion.button>
                   ))}

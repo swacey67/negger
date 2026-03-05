@@ -1,14 +1,15 @@
 import { BackgroundPaths } from './components/ui/background-paths';
 import DisplayCards from './components/ui/display-cards'; 
 import { ContainerScroll } from './components/ui/container-scroll-animation';
+import { FluidDropdown } from './components/ui/fluid-dropdown'; // LOGIC CHANGE: Meng-import komponen baru
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import Auth from './Auth'; 
 import kosmateIcon from './assets/Icon.png'; 
 import { 
-  Search, MapPin, Home, DollarSign, Wifi, Wind, 
-  ShieldCheck, Zap, Menu, X, ArrowRight, Star, 
-  Coffee, ChevronDown, CheckCircle2
+  Search, MapPin, DollarSign, 
+  ShieldCheck, Zap, Menu, X, ArrowRight, Star, CheckCircle2,
+  Building, House, Key, Shapes, Hotel // Ikon tambahan untuk dropdown
 } from 'lucide-react';
 
 const allProperties = [
@@ -23,7 +24,6 @@ const allProperties = [
   { id: 9, title: "Pondok Indah Mansions", location: "Pondok Indah, Jakarta", price: "Rp 2.500.000", period: "/month", image: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80", type: "Apartment", rating: 4.7 }
 ];
 
-// LOGIC CHANGE: Data bendera menggunakan emoji untuk kemudahan tanpa aset gambar
 const countries = [
     { name: "Indonesia", flag: "🇮🇩" },
     { name: "Malaysia", flag: "🇲🇾" },
@@ -33,6 +33,24 @@ const countries = [
     { name: "Germany", flag: "🇩🇪" },
     { name: "Japan", flag: "🇯🇵" },
     { name: "South Korea", flag: "🇰🇷" },
+];
+
+// Opsi untuk Dropdown Tipe Properti
+const propertyTypeOptions = [
+  { id: "", label: "Any Type", icon: Shapes, color: "#2dd4bf" },
+  { id: "Apartment", label: "Apartment", icon: Building, color: "#2dd4bf" },
+  { id: "Premium Kost", label: "Premium Kost", icon: Key, color: "#2dd4bf" },
+  { id: "Boarding House", label: "Boarding House", icon: House, color: "#2dd4bf" },
+  { id: "Loft", label: "Loft", icon: Hotel, color: "#2dd4bf" },
+  { id: "Studio", label: "Studio", icon: Shapes, color: "#2dd4bf" },
+];
+
+// Opsi untuk Dropdown Harga
+const priceOptions = [
+  { id: "", label: "Any Price", icon: DollarSign, color: "#2dd4bf" },
+  { id: "0-2000000", label: "Under Rp 2 Juta", icon: DollarSign, color: "#2dd4bf" },
+  { id: "2000000-5000000", label: "Rp 2 Juta - Rp 5 Juta", icon: DollarSign, color: "#2dd4bf" },
+  { id: "5000000-999999999", label: "Above Rp 5 Juta", icon: DollarSign, color: "#2dd4bf" },
 ];
 
 const NavigationBar = ({ isScrolled, navigate, pathname, mobileMenuOpen, setMobileMenuOpen }) => {
@@ -260,6 +278,7 @@ const App = () => {
 
               <div className="glass-panel rounded-2xl p-3 md:p-4 max-w-4xl mx-auto shadow-2xl border border-white/10 flex flex-col md:flex-row gap-3 transform hover:scale-[1.01] transition-transform duration-300 relative z-[500]">
                 
+                {/* 1. SECTION: LOCATION INPUT */}
                 <div className="flex-1 flex items-center bg-[#0A1128]/50 rounded-xl px-4 py-3 md:py-4 border border-white/5 group hover:border-teal-500/30 transition-colors">
                   <MapPin className="text-teal-400 w-5 h-5 mr-3" />
                   <div className="flex flex-col text-left w-full">
@@ -275,44 +294,36 @@ const App = () => {
                   </div>
                 </div>
 
+                {/* 2. SECTION: PROPERTY TYPE DROPDOWN (LOGIC CHANGE) */}
                 <div className="flex-1 flex items-center bg-[#0A1128]/50 rounded-xl px-4 py-3 md:py-4 border border-white/5 group hover:border-teal-500/30 transition-colors cursor-pointer relative">
-                  <img src={kosmateIcon} alt="home-icon" className="w-5 h-5 mr-3" style={{ filter: 'brightness(0) saturate(100%) invert(86%) sepia(80%) saturate(601%) hue-rotate(179deg) brightness(101%) contrast(101%)'}} /> 
+                  <img src={kosmateIcon} alt="home-icon" className="w-5 h-5 mr-3 shrink-0" style={{ filter: 'brightness(0) saturate(100%) invert(86%) sepia(80%) saturate(601%) hue-rotate(179deg) brightness(101%) contrast(101%)'}} /> 
                   <div className="flex flex-col text-left w-full relative">
-                    <label className="text-[10px] uppercase tracking-wider text-slate-500 font-bold z-10">Property Type</label>
-                    <div className="flex justify-between items-center w-full relative">
-                      <select 
+                    <label className="text-[10px] uppercase tracking-wider text-slate-500 font-bold z-10 relative pointer-events-none">Property Type</label>
+                    {/* Menggunakan FluidDropdown! */}
+                    <div className="-ml-3 w-[calc(100%+24px)]">
+                      <FluidDropdown 
+                        options={propertyTypeOptions}
                         value={searchType}
-                        onChange={(e) => setSearchType(e.target.value)}
-                        className="w-full bg-transparent border-none outline-none text-white text-sm font-medium appearance-none cursor-pointer pr-6 relative z-10"
-                      >
-                        <option value="" className="text-black">Any Type</option>
-                        <option value="Apartment" className="text-black">Apartment</option>
-                        <option value="Premium Kost" className="text-black">Premium Kost</option>
-                        <option value="Boarding House" className="text-black">Boarding House</option>
-                        <option value="Loft" className="text-black">Loft</option>
-                        <option value="Studio" className="text-black">Studio</option>
-                      </select>
-                      <ChevronDown className="w-4 h-4 text-slate-500 absolute right-0 pointer-events-none z-0" />
+                        onChange={setSearchType}
+                        placeholder="Any Type"
+                      />
                     </div>
                   </div>
                 </div>
 
+                {/* 3. SECTION: PRICE RANGE DROPDOWN (LOGIC CHANGE) */}
                 <div className="flex-1 flex items-center bg-[#0A1128]/50 rounded-xl px-4 py-3 md:py-4 border border-white/5 group hover:border-teal-500/30 transition-colors cursor-pointer relative">
-                  <DollarSign className="text-teal-400 w-5 h-5 mr-3 z-10" />
+                  <DollarSign className="text-teal-400 w-5 h-5 mr-3 z-10 shrink-0 pointer-events-none" />
                   <div className="flex flex-col text-left w-full relative">
-                    <label className="text-[10px] uppercase tracking-wider text-slate-500 font-bold z-10">Price Range</label>
-                    <div className="flex justify-between items-center w-full relative">
-                      <select 
+                    <label className="text-[10px] uppercase tracking-wider text-slate-500 font-bold z-10 relative pointer-events-none">Price Range</label>
+                     {/* Menggunakan FluidDropdown! */}
+                     <div className="-ml-3 w-[calc(100%+24px)]">
+                      <FluidDropdown 
+                        options={priceOptions}
                         value={searchPrice}
-                        onChange={(e) => setSearchPrice(e.target.value)}
-                        className="w-full bg-transparent border-none outline-none text-white text-sm font-medium appearance-none cursor-pointer pr-6 relative z-10"
-                      >
-                        <option value="" className="text-black">Any Price</option>
-                        <option value="0-2000000" className="text-black">Under Rp 2 Juta</option>
-                        <option value="2000000-5000000" className="text-black">Rp 2 Juta - Rp 5 Juta</option>
-                        <option value="5000000-999999999" className="text-black">Above Rp 5 Juta</option>
-                      </select>
-                      <ChevronDown className="w-4 h-4 text-slate-500 absolute right-0 pointer-events-none z-0" />
+                        onChange={setSearchPrice}
+                        placeholder="Any Price"
+                      />
                     </div>
                   </div>
                 </div>
@@ -327,23 +338,18 @@ const App = () => {
             </BackgroundPaths>
           </section>
 
-          {/* LOGIC CHANGE: Seksi 'Trusted By' diperbarui dengan teks baru dan bendera */}
           <section className="py-16 border-y border-white/5 bg-[#0A1128]/30 relative overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-b from-[#070B19] via-transparent to-[#070B19] opacity-70"></div>
             <div className="max-w-7xl mx-auto px-6 text-center relative z-10">
-              
               <CheckCircle2 className="w-10 h-10 text-teal-400 mx-auto mb-6 drop-shadow-[0_0_10px_rgba(45,212,191,0.5)]" />
-              
               <h2 className="text-4xl md:text-5xl font-extrabold text-white tracking-tighter mb-4 leading-tight">
                 Trusted by 10,000+ <br/>
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-teal-400">Customers & Families</span>
               </h2>
-              
               <p className="mt-2 text-lg font-semibold text-slate-300 uppercase tracking-widest mb-12">
                 from across the world!
               </p>
               
-              {/* Grid Bendera Negara */}
               <div className="glass-panel rounded-3xl p-8 border border-white/10 max-w-5xl mx-auto">
                   <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-6 justify-items-center opacity-80 hover:opacity-100 transition-opacity duration-500">
                     {countries.map((country) => (
@@ -358,7 +364,6 @@ const App = () => {
                     ))}
                   </div>
               </div>
-
             </div>
           </section>
 
