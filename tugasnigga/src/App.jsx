@@ -1,7 +1,7 @@
 import { BackgroundPaths } from './components/ui/background-paths';
 import DisplayCards from './components/ui/display-cards'; 
 import { ContainerScroll } from './components/ui/container-scroll-animation';
-import { FluidDropdown } from './components/ui/fluid-dropdown'; // LOGIC CHANGE: Meng-import komponen baru
+import { FluidDropdown } from './components/ui/fluid-dropdown';
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import Auth from './Auth'; 
@@ -9,7 +9,7 @@ import kosmateIcon from './assets/Icon.png';
 import { 
   Search, MapPin, DollarSign, 
   ShieldCheck, Zap, Menu, X, ArrowRight, Star, CheckCircle2,
-  Building, House, Key, Shapes, Hotel // Ikon tambahan untuk dropdown
+  Building, House, Key, Shapes, Hotel 
 } from 'lucide-react';
 
 const allProperties = [
@@ -35,7 +35,6 @@ const countries = [
     { name: "South Korea", flag: "🇰🇷" },
 ];
 
-// Opsi untuk Dropdown Tipe Properti
 const propertyTypeOptions = [
   { id: "", label: "Any Type", icon: Shapes, color: "#2dd4bf" },
   { id: "Apartment", label: "Apartment", icon: Building, color: "#2dd4bf" },
@@ -45,7 +44,6 @@ const propertyTypeOptions = [
   { id: "Studio", label: "Studio", icon: Shapes, color: "#2dd4bf" },
 ];
 
-// Opsi untuk Dropdown Harga
 const priceOptions = [
   { id: "", label: "Any Price", icon: DollarSign, color: "#2dd4bf" },
   { id: "0-2000000", label: "Under Rp 2 Juta", icon: DollarSign, color: "#2dd4bf" },
@@ -294,13 +292,12 @@ const App = () => {
                   </div>
                 </div>
 
-                {/* 2. SECTION: PROPERTY TYPE DROPDOWN (LOGIC CHANGE) */}
+                {/* 2. SECTION: PROPERTY TYPE DROPDOWN */}
                 <div className="flex-1 flex items-center bg-[#0A1128]/50 rounded-xl px-4 py-3 md:py-4 border border-white/5 group hover:border-teal-500/30 transition-colors cursor-pointer relative">
                   <img src={kosmateIcon} alt="home-icon" className="w-5 h-5 mr-3 shrink-0" style={{ filter: 'brightness(0) saturate(100%) invert(86%) sepia(80%) saturate(601%) hue-rotate(179deg) brightness(101%) contrast(101%)'}} /> 
                   <div className="flex flex-col text-left w-full relative">
                     <label className="text-[10px] uppercase tracking-wider text-slate-500 font-bold z-10 relative pointer-events-none">Property Type</label>
-                    {/* Menggunakan FluidDropdown! */}
-                    <div className="-ml-3 w-[calc(100%+24px)]">
+                    <div className="w-full pt-0.5">
                       <FluidDropdown 
                         options={propertyTypeOptions}
                         value={searchType}
@@ -311,13 +308,12 @@ const App = () => {
                   </div>
                 </div>
 
-                {/* 3. SECTION: PRICE RANGE DROPDOWN (LOGIC CHANGE) */}
+                {/* 3. SECTION: PRICE RANGE DROPDOWN */}
                 <div className="flex-1 flex items-center bg-[#0A1128]/50 rounded-xl px-4 py-3 md:py-4 border border-white/5 group hover:border-teal-500/30 transition-colors cursor-pointer relative">
                   <DollarSign className="text-teal-400 w-5 h-5 mr-3 z-10 shrink-0 pointer-events-none" />
                   <div className="flex flex-col text-left w-full relative">
                     <label className="text-[10px] uppercase tracking-wider text-slate-500 font-bold z-10 relative pointer-events-none">Price Range</label>
-                     {/* Menggunakan FluidDropdown! */}
-                     <div className="-ml-3 w-[calc(100%+24px)]">
+                     <div className="w-full pt-0.5">
                       <FluidDropdown 
                         options={priceOptions}
                         value={searchPrice}
